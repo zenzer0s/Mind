@@ -1,0 +1,28 @@
+services:
+  my_service:
+    url: http://my_service:8080
+    routes:
+      - name: my_service_route
+        paths:
+          - /my_service
+        methods:
+          - GET
+          - POST
+
+plugins:
+  - name: request-transformer
+    config:
+      add:
+        - header: X-My-Header
+          value: MyValue
+
+  - name: rate-limiting
+    config:
+      second: 5
+      hour: 1000
+
+upstreams:
+  - name: my_service
+    targets:
+      - target: my_service:8080
+        weight: 100

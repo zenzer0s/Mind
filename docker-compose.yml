@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    volumes:
+      - ./bot:/app
+    environment:
+      - NODE_ENV=production
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=production
+
+  media_service:
+    build:
+      context: ./media_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./media_service:/app
+    environment:
+      - GO_ENV=production
+
+  database:
+    image: redis:latest
+    volumes:
+      - ./database/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+  cache:
+    build:
+      context: ./cache
+      dockerfile: Dockerfile
+    volumes:
+      - ./cache:/app
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    volumes:
+      - ./gateway:/app
+
+  monitoring:
+    build:
+      context: ./monitoring
+      dockerfile: Dockerfile
+    volumes:
+      - ./monitoring:/app
+
+  web_app:
+    build:
+      context: ./web_app
+      dockerfile: Dockerfile
+    volumes:
+      - ./web_app:/app
+    ports:
+      - "80:80"
