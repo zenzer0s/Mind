@@ -22,3 +22,4 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
+bot/config.js
