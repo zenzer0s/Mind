@@ -1,26 +1,10 @@
-const Queue = require('bull');
+const { Queue } = require("bullmq");
+const Redis = require("ioredis");
 
-const queue = new Queue('my-queue', {
-    redis: {
-        host: 'localhost',
-        port: 6379
-    }
-});
+// Create a connection to Redis
+const connection = new Redis(); 
 
-// Process jobs in the queue
-queue.process(async (job) => {
-    // Job processing logic here
-    console.log(`Processing job ${job.id} with data:`, job.data);
-});
+// Create a BullMQ queue named "media-processing"
+const mediaQueue = new Queue("media-processing", { connection });
 
-// Add a job to the queue
-const addJob = async (data) => {
-    const job = await queue.add(data);
-    console.log(`Added job ${job.id} to the queue`);
-};
-
-// Export the queue and addJob function
-module.exports = {
-    queue,
-    addJob
-};
+module.exports = mediaQueue;
