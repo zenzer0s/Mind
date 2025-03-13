@@ -1,10 +1,24 @@
 const { Queue } = require("bullmq");
 const Redis = require("ioredis");
 
-// Create a connection to Redis
-const connection = new Redis(); 
+// Configuration options for Redis
+const redisOptions = {
+  maxRetriesPerRequest: null,
+  // Add other Redis options if needed
+};
 
-// Create a BullMQ queue named "media-processing"
-const mediaQueue = new Queue("media-processing", { connection });
+// Connects to Redis with error handling
+const connection = new Redis(redisOptions);
+connection.on('error', (err) => {
+  console.error('Redis connection error:', err);
+});
+
+// Configuration options for the queue
+const queueOptions = {
+  connection,
+  // Add other queue options here
+};
+
+const mediaQueue = new Queue("media-processing", queueOptions);
 
 module.exports = mediaQueue;
