@@ -15,7 +15,7 @@ func MediaHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Main function to start the server
-func main() {
+func startServer() {
     http.HandleFunc("/media", MediaHandler)
     http.ListenAndServe(":8080", nil)
 }

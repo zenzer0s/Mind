@@ -1,7 +1,6 @@
-package storage
+package main
 
 import (
-    "context"
     "errors"
     "sync"
 )
