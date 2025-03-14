@@ -17,13 +17,19 @@ const mediaWorker = new Worker(
     const { filePath, fileName, userId } = job.data;
     console.log(`🚀 Processing: ${fileName}, User ID: ${userId}`); // Debugging log
 
+    // Check if the file exists before sending
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ Error: File not found - ${filePath}`);
+      return;
+    }
+
     // Send file to Go microservice
     const formData = new FormData();
     formData.append("file", fs.createReadStream(filePath));
     formData.append("user_id", userId.toString());
 
     try {
-      console.log("📡 Sending file to Go service...");
+      console.log(`📡 Sending file: ${filePath} to Go service...`);
       const response = await axios.post("http://localhost:8081/process", formData, {
         headers: formData.getHeaders(),
       });
