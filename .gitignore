@@ -1,8 +1,12 @@
-# Node.js dependencies
+# Dependencies
 node_modules/
+vendor/
 
-# Environment variables
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+bot/config.js
 
 # Logs
 logs/
@@ -11,15 +15,56 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS generated files
+# Media and user files
+downloads/
+media_storage/
+media_service/media_storage/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Compiled output
+dist/
+build/
+*.out
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# System files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# IDE specific files
-.vscode/
+# IDE files
 .idea/
+.vscode/
+*.swp
+*.swo
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-bot/config.js
+*.sw?
+
+# Cache directories
+.npm
+.eslintcache
+.cache/
+cache/
+
+# Temporary files
+*.tmp
+*.bak
+temp/
+tmp/
+
+# Package files
+*.tgz
