@@ -1,41 +1,21 @@
 #!/bin/bash
 
-# Function to stop the running processes
-stop_processes() {
-  if [ -n "$WORKER_PID" ]; then
-    echo "Stopping worker process (PID: $WORKER_PID)..."
-    kill $WORKER_PID
-    unset WORKER_PID
-  fi
+echo "Starting PostgreSQL..."
+sudo systemctl start postgresql
 
-  if [ -n "$BOT_PID" ]; then
-    echo "Stopping bot process (PID: $BOT_PID)..."
-    kill $BOT_PID
-    unset BOT_PID
-  fi
-}
+echo "Starting Redis..."
+sudo systemctl start redis
 
-# Trap the stop command
-trap 'stop_processes; exit' SIGINT SIGTERM
+echo "Starting Go Media Service..."
+cd media_service
+nohup go run main.go > ../logs/go_service.log 2>&1 &
 
-# Stop any previously running instances
-stop_processes
+echo "Starting Worker..."
+cd ../bot
+nohup node jobs/worker.js > ../logs/worker.log 2>&1 &
 
-# Start the worker process
-echo "Starting worker process..."
-node bot/jobs/worker.js &
-WORKER_PID=$!
+echo "Starting Telegram Bot..."
+nohup node bot.js > ../logs/bot.log 2>&1 &
 
-# Start the bot process
-echo "Starting bot process..."
-node bot/bot.js &
-BOT_PID=$!
-
-# Wait for the stop command
-echo "Type 'stop' to stop the processes."
-while read -r input; do
-  if [ "$input" = "l" ]; then
-    stop_processes
-    exit 0
-  fi
-done
+echo "✅ All services started!"
+echo "Type 'stop' to stop all processes."
