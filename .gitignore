@@ -69,3 +69,4 @@ tmp/
 # Package files
 *.tgzdownloads/
 downloads
+media_service/uploads/
