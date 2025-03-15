@@ -212,6 +212,9 @@ async function registerCommands(bot) {
             message += `${index + 1}. ${file.file_name} (${date})\n`;
           });
           
+          // Ensure the message does not contain unescaped special characters
+          message = message.replace(/([_*[\]()~`>#+-=|{}.!])/g, '\\$1');
+          
           await bot.editMessageText(
             message,
             {
