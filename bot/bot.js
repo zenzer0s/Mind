@@ -48,9 +48,8 @@ bot.on("message", async (msg) => {
       
       await bot.sendMessage(
         chatId, 
-        `✅ Your file *${fileName}* has been added to the queue!`, 
+        `✅ Your file "${fileName}" has been added to the queue!`, 
         { 
-          parse_mode: "Markdown",
           reply_markup: {
             inline_keyboard: [
               [{ text: "View My Files", callback_data: "view_files" }],
