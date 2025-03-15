@@ -67,4 +67,5 @@ temp/
 tmp/
 
 # Package files
-*.tgz
+*.tgzdownloads/
+downloads
