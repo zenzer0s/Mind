@@ -42,37 +42,36 @@ const mediaWorker = new Worker(
   { connection }
 );
 
+// This function ONLY downloads the file and adds it to the queue
 async function handleMediaRequest(userId, fileUrl, fileName) {
-  const downloadsPath = path.join(__dirname, "../downloads");
+  console.log(`📡 Downloading file from Telegram (in memory): ${fileUrl}`);
 
-  // Ensure the 'downloads' directory exists
-  if (!fs.existsSync(downloadsPath)) {
-    fs.mkdirSync(downloadsPath, { recursive: true });
+  try {
+    // Download the file from Telegram
+    const response = await axios({
+      url: fileUrl,
+      method: "GET",
+      responseType: "arraybuffer", // Load file into memory
+      timeout: 30000, // 30 second timeout
+    });
+
+    const fileData = response.data;
+    console.log(`✅ File downloaded in memory: ${fileName} (${fileData.length} bytes)`);
+
+    // Add file data to queue with proper serialization
+    await mediaQueue.add("process-media", {
+      userId,
+      fileName,
+      fileData: Buffer.from(fileData).toString('base64') // Convert to base64 string for reliable queue transport
+    });
+
+    console.log(`📥 Added job for ${fileName}, User ID: ${userId} (processed in memory)`);
+    
+    return true;
+  } catch (error) {
+    console.error("❌ Error downloading file:", error.message);
+    return false;
   }
-
-  // Define the correct file path
-  const filePath = path.join(downloadsPath, fileName);
-  const writer = fs.createWriteStream(filePath);
-
-  // Download the file from Telegram
-  const response = await axios({
-    url: fileUrl,
-    method: "GET",
-    responseType: "stream",
-  });
-
-  response.data.pipe(writer);
-
-  await new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
-
-  console.log(`✅ Downloaded file: ${filePath}`);
-
-  // Add the correct filePath to BullMQ
-  await mediaQueue.add("process-media", { userId, filePath, fileName });
-  console.log(`📥 Added job for ${fileName}, User ID: ${userId}, File Path: ${filePath}`);
 }
 
 module.exports = handleMediaRequest;
